@@ -48,7 +48,7 @@ class Predictor(cog.Predictor):
         default=False,
         help="whether the input image is scratched",
     )
-    def predict(self, image, HR=False, with_scratch=False):
+    def predict(self, image: Path, HR: bool = False, with_scratch: bool = False) -> Path:
         try:
             os.chdir(self.basepath)
             input_path = os.path.join(self.opts.input_folder, os.path.basename(image))
