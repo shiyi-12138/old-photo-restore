@@ -10,6 +10,10 @@ build:
     - "bzip2"
     - "unzip"
     - "git"
+    - "cmake"
+    - "build-essential"
+    - "libopenblas-dev"
+    - "liblapack-dev"
   python_packages:
     - "torch==2.0.1"
     - "torchvision==0.15.2"
