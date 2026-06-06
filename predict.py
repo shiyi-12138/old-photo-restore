@@ -1,5 +1,4 @@
 import tempfile
-from pathlib import Path
 import argparse
 import shutil
 import os
@@ -48,7 +47,11 @@ class Predictor(BasePredictor):
         default=False,
         help="whether the input image is scratched",
     )
-    def predict(self, image: Path, HR: bool = False, with_scratch: bool = False) -> Path:
+    def predict(self,
+        image: Path = Input(description="Input image"),
+        HR: bool = Input(default=False, description="Whether the input image is high-resolution"),
+        with_scratch: bool = Input(default=False, description="Whether the input image is scratched"),
+    ) -> Path:
         try:
             os.chdir(self.basepath)
             input_path = os.path.join(self.opts.input_folder, os.path.basename(image))
