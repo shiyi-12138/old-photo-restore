@@ -5,11 +5,11 @@ import shutil
 import os
 import glob
 import cv2
-import cog
+from cog import BasePredictor, Input, Path
 from run import run_cmd
 
 
-class Predictor(cog.Predictor):
+class Predictor(BasePredictor):
     def setup(self):
         parser = argparse.ArgumentParser()
         parser.add_argument(
