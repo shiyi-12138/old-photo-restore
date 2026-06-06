@@ -9,7 +9,7 @@ import cog
 from run import run_cmd
 
 
-class Predictor(cog.Predictor):
+class Predictor(cog.BasePredictor):
     def setup(self):
         parser = argparse.ArgumentParser()
         parser.add_argument(
