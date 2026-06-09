@@ -165,10 +165,14 @@ class Predictor(BasePredictor):
 
             print("All the processing is done. Please check the results.")
 
-            final_output = os.listdir(os.path.join(self.opts.output_folder, "final_output"))[0]
-            image_restore = cv2.imread(
-                os.path.join(self.opts.output_folder, "final_output", final_output)
-            )
+            final_dir = os.path.join(self.opts.output_folder, "final_output")
+            final_files = [f for f in os.listdir(final_dir)
+                          if f.lower().endswith(('.png', '.jpg', '.jpeg'))
+                          and os.path.isfile(os.path.join(final_dir, f))]
+            if not final_files:
+                raise RuntimeError(f"No output image found in {final_dir}")
+            final_output = final_files[0]
+            image_restore = cv2.imread(os.path.join(final_dir, final_output))
             out_path = Path(tempfile.mkdtemp()) / "out.png"
             cv2.imwrite(str(out_path), image_restore)
         finally:
