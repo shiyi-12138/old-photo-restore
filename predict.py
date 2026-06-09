@@ -92,6 +92,19 @@ class Predictor(BasePredictor):
                 )
                 run_cmd(stage_1_command_1)
                 run_cmd(stage_1_command_2)
+                # Fallback: if scratch pipeline produced no output, re-run non-scratch
+                sr = os.path.join(stage_1_output_dir, "restored_image")
+                if not os.path.isdir(sr) or not os.listdir(sr):
+                    print("Warning: Scratch pipeline produced no output, falling back to non-scratch restoration")
+                    stage_1_command = (
+                        "python test.py --test_mode Full --Quality_restore --test_input "
+                        + stage_1_input_dir
+                        + " --outputs_dir "
+                        + stage_1_output_dir
+                        + " --gpu_ids "
+                        + gpu1
+                    )
+                    run_cmd(stage_1_command)
 
             ## Copy stage 1 results to final output (handles no-face case)
             stage_1_results = os.path.join(stage_1_output_dir, "restored_image")
