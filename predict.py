@@ -169,6 +169,18 @@ class Predictor(BasePredictor):
             final_files = [f for f in os.listdir(final_dir)
                           if f.lower().endswith(('.png', '.jpg', '.jpeg'))
                           and os.path.isfile(os.path.join(final_dir, f))]
+            # Fallback: if Stage 4 produced no output (e.g. no face detected),
+            # use Stage 1 result directly
+            if not final_files:
+                stage1_dir = os.path.join(self.opts.output_folder, "stage_1_restore_output", "restored_image")
+                if os.path.isdir(stage1_dir):
+                    for f in os.listdir(stage1_dir):
+                        sf = os.path.join(stage1_dir, f)
+                        if os.path.isfile(sf):
+                            shutil.copy(sf, os.path.join(final_dir, f))
+                    final_files = [f for f in os.listdir(final_dir)
+                                  if f.lower().endswith(('.png', '.jpg', '.jpeg'))
+                                  and os.path.isfile(os.path.join(final_dir, f))]
             if not final_files:
                 raise RuntimeError(f"No output image found in {final_dir}")
             final_output = final_files[0]
