@@ -2,6 +2,7 @@ import tempfile
 import argparse
 import shutil
 import os
+import subprocess
 import cv2
 from cog import BasePredictor, Input, Path
 from run import run_cmd
@@ -90,7 +91,14 @@ class Predictor(BasePredictor):
                     + gpu1
                     + HR_suffix
                 )
-                run_cmd(stage_1_command_1)
+                # Use subprocess directly to capture detection errors
+                result = subprocess.run(stage_1_command_1, shell=True, capture_output=True, text=True)
+                if result.returncode != 0:
+                    print(f"[scratch] detection.py failed (exit {result.returncode})")
+                    if result.stderr:
+                        print(f"[scratch] stderr: {result.stderr[:500]}")
+                if result.stdout:
+                    print(result.stdout.strip())
                 run_cmd(stage_1_command_2)
                 # Fallback: if scratch pipeline produced no output, re-run non-scratch
                 sr = os.path.join(stage_1_output_dir, "restored_image")
