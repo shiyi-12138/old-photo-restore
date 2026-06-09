@@ -178,16 +178,23 @@ class Predictor(BasePredictor):
 
             print("All the processing is done. Please check the results.")
 
-            # Recursively find any output image in the entire output folder
+            # Recursively find output image, preferring restored/final over input copies
             import glob
             output_root = self.opts.output_folder
             all_files = glob.glob(os.path.join(output_root, "**", "*"), recursive=True)
             img_exts = ('.png', '.jpg', '.jpeg')
             candidates = [f for f in all_files
                          if os.path.isfile(f) and f.lower().endswith(img_exts)]
+            # Sort: final_output > restored_image > anything else (input copies last)
+            def candidate_priority(f):
+                if '/final_output/' in f.replace('\\', '/'):
+                    return 0
+                if '/restored_image/' in f.replace('\\', '/'):
+                    return 1
+                return 2
+            candidates.sort(key=candidate_priority)
             print(f"[debug] output_root={output_root}")
-            print(f"[debug] total files under output: {len(all_files)}")
-            print(f"[debug] image candidates: {len(candidates)}")
+            print(f"[debug] image candidates: {len(candidates)} (prefer final_output/restored_image)")
             if candidates:
                 print(f"[debug] using: {candidates[0]}")
             if not candidates:
