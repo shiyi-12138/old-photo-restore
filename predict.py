@@ -165,26 +165,24 @@ class Predictor(BasePredictor):
 
             print("All the processing is done. Please check the results.")
 
-            final_dir = os.path.join(self.opts.output_folder, "final_output")
-            final_files = [f for f in os.listdir(final_dir)
-                          if f.lower().endswith(('.png', '.jpg', '.jpeg'))
-                          and os.path.isfile(os.path.join(final_dir, f))]
-            # Fallback: if Stage 4 produced no output (e.g. no face detected),
-            # use Stage 1 result directly
-            if not final_files:
-                stage1_dir = os.path.join(self.opts.output_folder, "stage_1_restore_output", "restored_image")
-                if os.path.isdir(stage1_dir):
-                    for f in os.listdir(stage1_dir):
-                        sf = os.path.join(stage1_dir, f)
-                        if os.path.isfile(sf):
-                            shutil.copy(sf, os.path.join(final_dir, f))
-                    final_files = [f for f in os.listdir(final_dir)
-                                  if f.lower().endswith(('.png', '.jpg', '.jpeg'))
-                                  and os.path.isfile(os.path.join(final_dir, f))]
-            if not final_files:
-                raise RuntimeError(f"No output image found in {final_dir}")
-            final_output = final_files[0]
-            image_restore = cv2.imread(os.path.join(final_dir, final_output))
+            # Recursively find any output image in the entire output folder
+            import glob
+            output_root = self.opts.output_folder
+            all_files = glob.glob(os.path.join(output_root, "**", "*"), recursive=True)
+            img_exts = ('.png', '.jpg', '.jpeg')
+            candidates = [f for f in all_files
+                         if os.path.isfile(f) and f.lower().endswith(img_exts)]
+            print(f"[debug] output_root={output_root}")
+            print(f"[debug] total files under output: {len(all_files)}")
+            print(f"[debug] image candidates: {len(candidates)}")
+            if candidates:
+                print(f"[debug] using: {candidates[0]}")
+            if not candidates:
+                # List all files for debugging
+                for f in sorted(all_files):
+                    print(f"[debug]   {f}")
+                raise RuntimeError(f"No output image found anywhere under {output_root}")
+            image_restore = cv2.imread(candidates[0])
             out_path = Path(tempfile.mkdtemp()) / "out.png"
             cv2.imwrite(str(out_path), image_restore)
         finally:
