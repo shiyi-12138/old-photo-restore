@@ -19,10 +19,11 @@ build:
   python_packages:
     - "cog"
   run:
-    - pip install "cmake<4.0"
-    - pip install torch==2.0.1 torchvision==0.15.2 opencv-python==4.8.1.78 numpy==1.24.4 scipy==1.10.1 pillow==10.0.0 dominate==2.9.1 scikit-image==0.21.0 easydict==1.13 PyYAML==6.0.1
-    - pip install --no-build-isolation dlib==19.24.2
-    - mkdir -p /src/Face_Detection && cd /src/Face_Detection && wget -q https://github.com/davisking/dlib-models/raw/master/shape_predictor_68_face_landmarks.dat.bz2 && bzip2 -d shape_predictor_68_face_landmarks.dat.bz2
+    - pip install --no-cache-dir "cmake<4.0"
+    - pip install --no-cache-dir torch==2.0.1 torchvision==0.15.2 opencv-python==4.8.1.78 numpy==1.24.4 scipy==1.10.1 pillow==10.0.0 dominate==2.9.1 scikit-image==0.21.0 easydict==1.13 PyYAML==6.0.1
+    - pip install --no-cache-dir --no-build-isolation dlib==19.24.2
+    - pip cache purge 2>/dev/null; apt-get clean 2>/dev/null; rm -rf /var/lib/apt/lists/* 2>/dev/null
+    - mkdir -p /src/Face_Detection && cd /src/Face_Detection && wget -q https://github.com/davisking/dlib-models/raw/master/shape_predictor_68_face_landmarks.dat.bz2 && bzip2 -d shape_predictor_68_face_landmarks.dat.bz2 && rm -f shape_predictor_68_face_landmarks.dat.bz2
     - mkdir -p /src/Face_Enhancement && cd /src/Face_Enhancement && wget -q https://github.com/microsoft/Bringing-Old-Photos-Back-to-Life/releases/download/v1.0/face_checkpoints.zip && unzip -q face_checkpoints.zip && rm face_checkpoints.zip
     - mkdir -p /src/Global && cd /src/Global && wget -q https://github.com/microsoft/Bringing-Old-Photos-Back-to-Life/releases/download/v1.0/global_checkpoints.zip && unzip -q global_checkpoints.zip && rm global_checkpoints.zip
     - mkdir -p /src/Face_Enhancement/models/networks && cd /src/Face_Enhancement/models/networks && git clone https://github.com/vacancy/Synchronized-BatchNorm-PyTorch && cp -rf Synchronized-BatchNorm-PyTorch/sync_batchnorm .
